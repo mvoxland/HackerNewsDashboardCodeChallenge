@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36301.6 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HackerNewsDashboard.Client", "HackerNewsDashboard.Client\HackerNewsDashboard.Client.csproj", "{460CF823-C986-4AE7-953A-2771746B1055}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HackerNewsDashboard.API", "HackerNewsDashboard.API\HackerNewsDashboard.API.csproj", "{12CCCEA7-9CA7-4F60-8E12-FDF9AB18E1ED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{460CF823-C986-4AE7-953A-2771746B1055}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{460CF823-C986-4AE7-953A-2771746B1055}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{460CF823-C986-4AE7-953A-2771746B1055}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{460CF823-C986-4AE7-953A-2771746B1055}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12CCCEA7-9CA7-4F60-8E12-FDF9AB18E1ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12CCCEA7-9CA7-4F60-8E12-FDF9AB18E1ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12CCCEA7-9CA7-4F60-8E12-FDF9AB18E1ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12CCCEA7-9CA7-4F60-8E12-FDF9AB18E1ED}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {33F216CE-1350-4E45-B27E-4A389D17AC77}
+	EndGlobalSection
+EndGlobal
