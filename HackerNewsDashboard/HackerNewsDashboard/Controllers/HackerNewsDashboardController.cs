@@ -28,14 +28,12 @@ namespace HackerNewsDashboard.Controllers
         public HackerNewsDashboardController(
             ILogger<HackerNewsDashboardController> logger, 
             UserManager<User> userManager,
-            //RoleManager<IdentityRole> roleManager,
             IConfiguration config,
             ITokenService tokenService,
             HackerNewsDBContext context)
         {
             _logger = logger;
             _userManager = userManager;
-            //_roleManager = roleManager;
             _config = config;
             _tokenService = tokenService;
             _context = context;

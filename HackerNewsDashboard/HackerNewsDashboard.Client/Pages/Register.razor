@@ -1,0 +1,46 @@
+﻿@page "/register"
+
+@using HackerNewsDashboard.Client.Services
+@using HackerNewsDashboard.Common.DTO
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Register</PageTitle>
+<h1>Register</h1>
+
+@if (!string.IsNullOrEmpty(error))
+{
+    <h3>@error</h3>
+}
+
+<input @bind="username" placeholder="Username" />
+<input @bind="email" placeholder="email" />
+<input @bind="password" type="password" placeholder="Password" />
+<button @onclick="HandleRegister">Register</button>
+
+<a href="/login">Login</a>
+
+@code {
+    string username = "";
+    string password = "";
+    string email = "";
+
+    string error = "";
+
+    async Task HandleRegister()
+    {
+        if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(password))
+        {
+            var result = await AuthService.Register(new Common.DTO.Register() { Username = username, Email = email, Password = password });
+            if (result is not null && result.IsSuccessStatusCode)
+            {
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                var message = await result?.Content?.ReadAsStringAsync();
+                error = message ?? "Error registering, please try again later.";
+            }
+        }
+    }
+}

@@ -1,0 +1,43 @@
+﻿@page "/login"
+
+@using HackerNewsDashboard.Client.Services
+@using HackerNewsDashboard.Common.DTO
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Login</PageTitle>
+<h1>Login</h1>
+
+@if (!string.IsNullOrEmpty(error))
+{
+    <h3>@error</h3>
+}
+
+<input @bind="username" placeholder="Username" />
+<input @bind="password" type="password" placeholder="Password" />
+<button @onclick="HandleLogin">Login</button>
+
+<a href="/register">Register</a>
+
+@code {
+    string username = "";
+    string password = "";
+
+    string error = "";
+
+    async Task HandleLogin()
+    {
+        if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
+        {
+            var result = await AuthService.Login(new Common.DTO.Login(){ Username = username, Password = password});
+            if (result is not null && result.IsSuccessStatusCode)
+            {
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                error = result?.Content?.ToString() ?? "Error logging in, please try again later.";
+            }
+        }
+    }
+}

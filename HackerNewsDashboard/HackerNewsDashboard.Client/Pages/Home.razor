@@ -1,7 +1,21 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+@inject HttpClient httpClient
 
+<PageTitle>Home</PageTitle>
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+<p>@test</p>
+<p>@testAuth</p>
+
+@code{
+    string? test;
+    string? testAuth;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try { test = await httpClient.GetStringAsync("api/test"); } catch { }
+        try { testAuth = await httpClient.GetStringAsync("api/testAuthorization"); } catch { }
+    }
+}
