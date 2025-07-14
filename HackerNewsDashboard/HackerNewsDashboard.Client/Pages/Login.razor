@@ -29,14 +29,19 @@
     {
         if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
         {
-            var result = await AuthService.Login(new Common.DTO.Login(){ Username = username, Password = password});
+            var result = await AuthService.Login(new Common.DTO.Login(){ Email = username, Password = password});
             if (result is not null && result.IsSuccessStatusCode)
             {
                 NavigationManager.NavigateTo("/");
             }
             else
             {
-                var message = await result?.Content?.ReadAsStringAsync()!;
+                string? message = null;
+                try
+                {
+                    message = await result?.Content?.ReadAsStringAsync()!;
+                }
+                catch { }
                 error = message ?? "Error logging in, please try again later.";
             }
         }

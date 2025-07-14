@@ -38,7 +38,12 @@
             }
             else
             {
-                var message = await result?.Content?.ReadAsStringAsync()!;
+                string? message = null;
+                try
+                {
+                    message = await result?.Content?.ReadAsStringAsync()!;
+                }
+                catch { }
                 error = message ?? "Error registering, please try again later.";
             }
         }

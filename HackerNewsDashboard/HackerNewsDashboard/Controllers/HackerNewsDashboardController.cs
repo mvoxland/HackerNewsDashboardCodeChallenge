@@ -57,7 +57,7 @@ namespace HackerNewsDashboard.Controllers
         {
             try
             {
-                var existingUser = await _userManager.FindByNameAsync(model.Email);
+                var existingUser = await _userManager.FindByEmailAsync(model.Email);
                 if (existingUser != null)
                 {
                     return BadRequest("You already have an account, please login instead.");
@@ -67,7 +67,7 @@ namespace HackerNewsDashboard.Controllers
                 {
                     Email = model.Email,
                     SecurityStamp = Guid.NewGuid().ToString(),
-                    UserName = model.Email,
+                    UserName = model.Username,
                     EmailConfirmed = true
                 };
 
@@ -93,7 +93,7 @@ namespace HackerNewsDashboard.Controllers
         {
             try
             {
-                var user = await _userManager.FindByNameAsync(model.Username);
+                var user = await _userManager.FindByEmailAsync(model.Email);
                 if (user == null)
                 {
                     return BadRequest("Unrecognized User.");
@@ -111,14 +111,13 @@ namespace HackerNewsDashboard.Controllers
                 string refreshToken = _tokenService.GenerateRefreshToken();
 
                 //save record in database for the refresh token
-                var tokenInfo = _context.TokenInfo.
-                            FirstOrDefault(a => a.Username == user.UserName);
+                var tokenInfo = _context.TokenInfo.FirstOrDefault(a => a.Email == user.Email);
 
                 if (tokenInfo == null)
                 {
                     var ti = new TokenInfo
                     {
-                        Username = user.UserName!,
+                        Email = user.Email!,
                         RefreshToken = refreshToken,
                         ExpiredAt = DateTime.UtcNow.AddDays(7).ToString(),  
                     };
@@ -154,7 +153,7 @@ namespace HackerNewsDashboard.Controllers
                 var principal = _tokenService.GetPrincipalFromExpiredToken(tokenModel.AccessToken);
                 var username = principal.Identity?.Name;
 
-                var tokenInfo = _context.TokenInfo.SingleOrDefault(u => u.Username == username);
+                var tokenInfo = _context.TokenInfo.SingleOrDefault(u => u.Email == username);
                 if (tokenInfo == null || tokenInfo.RefreshToken != tokenModel.RefreshToken || DateTime.Parse(tokenInfo.ExpiredAt) <= DateTime.UtcNow)
                 {
                     return BadRequest("Invalid refresh token. Please login again.");

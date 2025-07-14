@@ -1,6 +1,8 @@
 ﻿@using HackerNewsDashboard.Client.Providers
 @using HackerNewsDashboard.Client.Services
+@using Microsoft.AspNetCore.Components.Authorization
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @inherits LayoutComponentBase
 
@@ -11,9 +13,15 @@
 
     <main>
         <div class="top-row px-4">
-            <a href="/login">Login</a>
-            <a href="/register">Register</a>
-            <a href="/logout">Logout</a>
+            @if (AuthState?.User.Identity?.IsAuthenticated == true)
+            {
+                <a href="/logout">Logout</a>
+            }
+            else
+            {
+                <a href="/login">Login</a>
+                <a href="/register">Register</a>
+            }
         </div>
 
         <article class="content px-4">
@@ -27,3 +35,18 @@
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code{
+    AuthenticationState? AuthState;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        //Force an unauthenticated user to login or register. More of a quality of life feature than anything, they wouldn't be able to get data from the api methods.
+        if (AuthState?.User.Identity?.IsAuthenticated != true && !(NavigationManager.Uri.ToLower().EndsWith("/login") || NavigationManager.Uri.ToLower().EndsWith("/register")))
+        {
+            NavigationManager.NavigateTo("/login");
+        }
+    }
+}

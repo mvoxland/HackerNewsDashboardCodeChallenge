@@ -26,19 +26,35 @@ public class AuthService : IAuthService
 
     public async Task<HttpResponseMessage?> Register(Register model)
     {
-        var response = await _httpClient.PostAsJsonAsync("api/register", model);
+        HttpResponseMessage? response;
+        try
+        {
+            response = await _httpClient.PostAsJsonAsync("api/register", model);
+        }
+        catch
+        {
+            return null;
+        }
 
         if (response is null || !response.IsSuccessStatusCode)
             return response;
 
-        var loginResult = await Login(new Common.DTO.Login() { Username = model.Username, Password = model.Password });
+        var loginResult = await Login(new Common.DTO.Login() { Email = model.Email, Password = model.Password });
 
         return response;
     }
 
     public async Task<HttpResponseMessage?> Login(Login model)
     {
-        var response = await _httpClient.PostAsJsonAsync("api/login", model);
+        HttpResponseMessage? response;
+        try
+        {
+            response = await _httpClient.PostAsJsonAsync("api/login", model);
+        }
+        catch
+        {
+            return null;
+        }
 
         if (response is null || !response.IsSuccessStatusCode)
             return response;
