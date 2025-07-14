@@ -34,7 +34,7 @@
             var result = await AuthService.Register(new Common.DTO.Register() { Username = username, Email = email, Password = password });
             if (result is not null && result.IsSuccessStatusCode)
             {
-                NavigationManager.NavigateTo("/");
+                NavigationManager.NavigateTo("/", forceLoad: true);
             }
             else
             {

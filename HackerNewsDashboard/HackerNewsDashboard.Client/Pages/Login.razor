@@ -32,7 +32,7 @@
             var result = await AuthService.Login(new Common.DTO.Login(){ Email = username, Password = password});
             if (result is not null && result.IsSuccessStatusCode)
             {
-                NavigationManager.NavigateTo("/");
+                NavigationManager.NavigateTo("/", forceLoad: true);
             }
             else
             {
