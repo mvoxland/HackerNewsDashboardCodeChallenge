@@ -22,6 +22,6 @@ public class ProxyItem
     public int? Score { get; set; }
     public string? Title { get; set; }
     public IEnumerable<int>? Parts { get; set; }
-    public IEnumerable<int>? Descendants { get; set; }
+    public int? Descendants { get; set; }
 
 }
