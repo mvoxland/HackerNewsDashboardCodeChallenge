@@ -6,29 +6,42 @@
 
 @inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<RadzenComponents @rendermode="@(new InteractiveWebAssemblyRenderMode(prerender: false))" />
 
-    <main>
-        <div class="top-row px-4">
-            @if (AuthState?.User.Identity?.IsAuthenticated == true)
-            {
-                <a href="/logout">Logout</a>
-            }
-            else
-            {
-                <a href="/login">Login</a>
-                <a href="/register">Register</a>
-            }
-        </div>
-
+<RadzenLayout>
+    <RadzenHeader>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
+            <div class="row w-100">
+                <div class="col d-flex" style="align-items:center;">
+                    <RadzenSidebarToggle Click="@(() => sidebarExpanded = !sidebarExpanded)" />
+                    <RadzenLabel @onclick="@(() => NavigationManager.NavigateTo("/"))" Style="cursor:pointer;"><h4>Hacker News Dashboard</h4></RadzenLabel>
+                </div>
+                <div class="col d-flex flex-wrap flex-row-reverse" style="align-items:center;">
+                    @if (AuthState?.User.Identity?.IsAuthenticated == true)
+                    {
+                        <RadzenButton Text="Logout" Click="@(() => NavigationManager.NavigateTo("/logout"))" class="ms-2" />
+                        @* <span>Hello @AuthState.User.Identity.Name</span> *@
+                    }
+                    else
+                    {
+                        <RadzenButton Text="Login" Click="@(() => NavigationManager.NavigateTo("/login"))" class="ms-2" />
+                        <RadzenButton Text="Register" Click="@(() => NavigationManager.NavigateTo("/register"))" class="ms-2" />
+                    }
+                </div>
+            </div>
+        </RadzenStack>
+    </RadzenHeader>
+    <RadzenSidebar @bind-Expanded="@sidebarExpanded">
+        <RadzenPanelMenu>
+            <RadzenPanelMenuItem Text="Home" Icon="home" />
+        </RadzenPanelMenu>
+    </RadzenSidebar>
+    <RadzenBody>
         <article class="content px-4">
             @Body
         </article>
-    </main>
-</div>
+    </RadzenBody>
+</RadzenLayout>
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
@@ -38,6 +51,8 @@
 
 @code{
     AuthenticationState? AuthState;
+
+    bool sidebarExpanded = true;
 
     protected override async Task OnParametersSetAsync()
     {

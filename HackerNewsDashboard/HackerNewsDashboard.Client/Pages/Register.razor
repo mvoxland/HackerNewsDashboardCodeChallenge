@@ -10,15 +10,42 @@
 
 @if (!string.IsNullOrEmpty(error))
 {
-    <h3>@error</h3>
+    <RadzenAlert AlertStyle="AlertStyle.Danger">@error</RadzenAlert>
 }
 
-<input @bind="username" placeholder="Username" />
-<input @bind="email" placeholder="email" />
-<input @bind="password" type="password" placeholder="Password" />
-<button @onclick="HandleRegister">Register</button>
 
-<a href="/login">Login</a>
+<RadzenTemplateForm Data="@("data")" Submit="@(async (string arg) => await HandleRegister())">
+    <div class="row">
+        <div class="col">
+            <RadzenLabel Component="email" Text="Email: " />
+            <RadzenTextBox @bind-Value="email" Placeholder="Email" Name="email" Disabled="@isLoading" />
+            <RadzenRequiredValidator Component="email" Text="*Required" />
+            <RadzenEmailValidator Component="email" Text="*Must be a valid Email" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <RadzenLabel Component="password" Text="Password: " />
+            <RadzenPassword @bind-Value="password" Placeholder="Password" Name="password" Disabled="@isLoading" />
+            <RadzenRequiredValidator Component="password" Text="*Required" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <RadzenLabel Component="username" Text="Username: " />
+            <RadzenPassword @bind-Value="username" Placeholder="Username" Name="username" Disabled="@isLoading" />
+            <RadzenRequiredValidator Component="username" Text="*Required" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <RadzenButton ButtonType="ButtonType.Submit" Text="Register" IsBusy="@isLoading" />
+        </div>
+    </div>
+</RadzenTemplateForm>
+
+<p class="mt-4">If you already have an account, <RadzenLink Text="Login" Path="/login" /></p>
 
 @code {
     string username = "";
@@ -27,25 +54,29 @@
 
     string error = "";
 
+    bool isLoading;
+
     async Task HandleRegister()
     {
-        if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(password))
+        isLoading = true;
+        StateHasChanged();
+
+        var result = await AuthService.Register(new Common.DTO.Register() { Username = username, Email = email, Password = password });
+        if (result is not null && result.IsSuccessStatusCode)
         {
-            var result = await AuthService.Register(new Common.DTO.Register() { Username = username, Email = email, Password = password });
-            if (result is not null && result.IsSuccessStatusCode)
-            {
-                NavigationManager.NavigateTo("/", forceLoad: true);
-            }
-            else
-            {
-                string? message = null;
-                try
-                {
-                    message = await result?.Content?.ReadAsStringAsync()!;
-                }
-                catch { }
-                error = message ?? "Error registering, please try again later.";
-            }
+            NavigationManager.NavigateTo("/", forceLoad: true);
         }
+        else
+        {
+            string? message = null;
+            try
+            {
+                message = await result?.Content?.ReadAsStringAsync()!;
+            }
+            catch { }
+            error = message ?? "Error registering, please try again later.";
+        }
+
+        isLoading = false;
     }
 }

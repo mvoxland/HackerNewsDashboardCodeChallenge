@@ -10,40 +10,64 @@
 
 @if (!string.IsNullOrEmpty(error))
 {
-    <h3>@error</h3>
+    <RadzenAlert AlertStyle="AlertStyle.Danger">@error</RadzenAlert>
 }
 
-<input @bind="username" placeholder="Username" />
-<input @bind="password" type="password" placeholder="Password" />
-<button @onclick="HandleLogin">Login</button>
+<RadzenTemplateForm Data="@("data")" Submit="@(async(string arg) => await HandleLogin())">
+    <div class="row">
+        <div class="col">
+            <RadzenLabel Component="email" Text="Email: " />
+            <RadzenTextBox @bind-Value="email" Placeholder="Email" Name="email" Disabled="@isLoading" />
+            <RadzenRequiredValidator Component="email" Text="*Required" />
+            <RadzenEmailValidator Component="email" Text="*Must be a valid Email" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <RadzenLabel Component="password" Text="Password: " />
+            <RadzenPassword @bind-Value="password" Placeholder="Password" Name="password" Disabled="@isLoading" />
+            <RadzenRequiredValidator Component="password" Text="*Required" />
+        </div>
+    </div>
 
-<a href="/register">Register</a>
+    <div class="row">
+        <div class="col">
+            <RadzenButton ButtonType="ButtonType.Submit" Text="Login" IsBusy="@isLoading" />
+        </div>
+    </div>
+</RadzenTemplateForm>
+
+<p class="mt-4">If you don't have an account, <RadzenLink Text="Register" Path="/register" /></p>
 
 @code {
-    string username = "";
+    string email = "";
     string password = "";
 
     string error = "";
 
+    bool isLoading;
+
     async Task HandleLogin()
     {
-        if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
+        isLoading = true;
+        StateHasChanged();
+
+        var result = await AuthService.Login(new Common.DTO.Login() { Email = email, Password = password });
+        if (result is not null && result.IsSuccessStatusCode)
         {
-            var result = await AuthService.Login(new Common.DTO.Login(){ Email = username, Password = password});
-            if (result is not null && result.IsSuccessStatusCode)
-            {
-                NavigationManager.NavigateTo("/", forceLoad: true);
-            }
-            else
-            {
-                string? message = null;
-                try
-                {
-                    message = await result?.Content?.ReadAsStringAsync()!;
-                }
-                catch { }
-                error = message ?? "Error logging in, please try again later.";
-            }
+            NavigationManager.NavigateTo("/", forceLoad: true);
         }
+        else
+        {
+            string? message = null;
+            try
+            {
+                message = await result?.Content?.ReadAsStringAsync()!;
+            }
+            catch { }
+            error = message ?? "Error logging in, please try again later.";
+        }
+
+        isLoading = false;
     }
 }

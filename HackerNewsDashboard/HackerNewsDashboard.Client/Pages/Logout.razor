@@ -8,17 +8,10 @@
 <PageTitle>Logout</PageTitle>
 <h1>Logout</h1>
 
-@if (!string.IsNullOrEmpty(error))
-{
-    <h3>@error</h3>
-}
-
 <p>Are you sure you want to log out? If so, please press the button below and close all open tabs.</p>
-<button @onclick="HandleLogout">Logout</button>
+<RadzenButton Text="Logout" Click="@HandleLogout" />
 
 @code {
-    string error = "";
-
     async Task HandleLogout()
     {
         await AuthService.Logout();
