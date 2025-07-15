@@ -15,7 +15,7 @@ Welcome to your new app.
 
     protected override async Task OnInitializedAsync()
     {
-        try { test = await httpClient.GetStringAsync("api/test"); } catch { }
-        try { testAuth = await httpClient.GetStringAsync("api/testAuthorization"); } catch { }
+        try { test = await httpClient.GetStringAsync("api/proxy/item/651651"); } catch { }
+        try { testAuth = await httpClient.GetStringAsync("api/proxy/topstories"); } catch { }
     }
 }

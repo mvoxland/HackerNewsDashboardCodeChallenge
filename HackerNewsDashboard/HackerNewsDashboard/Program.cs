@@ -1,3 +1,4 @@
+using HackerNewsDashboard.Client.Handlers;
 using HackerNewsDashboard.Components;
 using HackerNewsDashboard.Data;
 using HackerNewsDashboard.Data.Contexts;
@@ -48,6 +49,15 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddHttpClient("HackerNewsDashboardOutgoingHackerNews", client =>
+{
+    client.BaseAddress = new Uri("https://hacker-news.firebaseio.com/v0/");
+});
+builder.Services.AddScoped(sp =>
+{
+    var factory = sp.GetRequiredService<IHttpClientFactory>();
+    return factory.CreateClient("HackerNewsDashboardOutgoingHackerNews");
+});
 
 var app = builder.Build();
 
