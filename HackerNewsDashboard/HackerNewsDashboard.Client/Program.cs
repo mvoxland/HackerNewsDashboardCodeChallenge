@@ -4,6 +4,7 @@ using HackerNewsDashboard.Client.Providers;
 using HackerNewsDashboard.Client.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Radzen;
 using System.Net.Http;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -26,5 +27,7 @@ builder.Services.AddScoped(sp =>
 });
 
 builder.Services.AddBlazoredLocalStorage();
+
+builder.Services.AddRadzenComponents();
 
 await builder.Build().RunAsync();

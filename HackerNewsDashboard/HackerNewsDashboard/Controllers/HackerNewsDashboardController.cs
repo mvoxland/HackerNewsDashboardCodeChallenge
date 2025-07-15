@@ -142,7 +142,6 @@ namespace HackerNewsDashboard.Controllers
                 _logger.LogError(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
-
         }
 
         [HttpPost("refreshToken")]
