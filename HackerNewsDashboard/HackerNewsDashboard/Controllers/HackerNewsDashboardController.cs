@@ -38,6 +38,56 @@ namespace HackerNewsDashboard.Controllers
             _httpClient = httpClient;
         }
 
+        [Authorize]
+        [HttpGet("bestStoriesPreviewList")]
+        public async Task<StoriesWithCount?> GetBestStoriesPreviewList(int? skip, int? take)
+        {
+            if (take is null || take == 0 || skip is null) return null;
+
+            try
+            {
+                var bestStoryIds = await _httpClient.GetFromJsonAsync<IEnumerable<int>>("beststories.json");
+                
+                if(bestStoryIds is null || !bestStoryIds.Any()) return null;
+                if (skip < 0 || take < 0 || skip + take > bestStoryIds.Count()) return null;
+
+                List<Task<ProxyItem?>> queries = new();
+                foreach (var storyId in bestStoryIds.Skip(skip!.Value).Take(take!.Value))
+                {
+                    queries.Add(_httpClient.GetFromJsonAsync<ProxyItem>("item/" + storyId + ".json"));
+                }
+                await Task.WhenAll(queries);
+
+                List<Story> bestStories = new();
+                foreach (var queryResult in queries)
+                {
+                    if(queryResult?.Result is not null && queryResult.Result.Deleted != true && queryResult.Result.Dead != true)
+                    {
+                        bestStories.Add(new Story()
+                        {
+                            Id = queryResult.Result.Id,
+                            By = queryResult.Result.By,
+                            Time = queryResult.Result.Time,
+                            Kids = queryResult.Result.Kids,
+                            Url = queryResult.Result.Url,
+                            Score = queryResult.Result.Score,
+                            Title = queryResult.Result.Title,
+                            Descendants = queryResult.Result.Descendants,
+                        });
+                    }
+                }
+
+                if(bestStories.Count > 0)
+                    return new StoriesWithCount() { Stories = bestStories, Count = bestStoryIds.Count() };
+                else
+                    return null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         #region "proxy"
         [Authorize]
         [HttpGet("proxy/item/{id:int}")]
