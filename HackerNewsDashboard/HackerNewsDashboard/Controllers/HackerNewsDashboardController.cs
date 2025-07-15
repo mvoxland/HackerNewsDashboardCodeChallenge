@@ -104,7 +104,7 @@ namespace HackerNewsDashboard.Controllers
                     return Unauthorized();
                 }
 
-                List<Claim> authClaims = [ new (ClaimTypes.Name, user.UserName!), new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())];
+                List<Claim> authClaims = [ new (ClaimTypes.Name, user.Email!), new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())];
 
                 var token = _tokenService.GenerateAccessToken(authClaims);
 
@@ -150,9 +150,9 @@ namespace HackerNewsDashboard.Controllers
             try
             {
                 var principal = _tokenService.GetPrincipalFromExpiredToken(tokenModel.AccessToken);
-                var username = principal.Identity?.Name;
+                var email = principal.Identity?.Name;
 
-                var tokenInfo = _context.TokenInfo.SingleOrDefault(u => u.Email == username);
+                var tokenInfo = _context.TokenInfo.SingleOrDefault(u => u.Email == email);
                 if (tokenInfo == null || tokenInfo.RefreshToken != tokenModel.RefreshToken || DateTime.Parse(tokenInfo.ExpiredAt) <= DateTime.UtcNow)
                 {
                     return BadRequest("Invalid refresh token. Please login again.");
