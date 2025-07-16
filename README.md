@@ -22,7 +22,7 @@ I used Radzen.Blazor to make the client style. I have contributed to the open so
 
 I used SQLLite for the database, since it is easiest to put in the GitHub repository. It has a little bit of pre-loaded data on a user with Email: "johnDoe@gmail.com" and Password: "passwordA1$". Or you can register as new user of course, the emails are there just to help with login they never get interacted with.
 
-No tests since the main failure points are the HTTP requests and UI Elements, and what isn't is pretty simple functions.
+No tests right now since the main failure points are the HTTP requests and UI Elements, and what isn't is pretty simple functions. But should be added later if possible.
 
 I also added basic support for machine learning (AI) based reccomendations. I don't have a dataset nearly large enough to get good results off of this, and it uses Matrix Factorization so a large amount of other users would also be needed. For this reason, clicking any item that has not been rated before by some user will make it unable to predict a possible rating. Nonetheless, a very similar process could be used for any other number of reccomendation processes (Ex: a ChatGPT api call, or a model analyzing text similarity between a post and the titles of stories that the current user has liked in the past).
 
