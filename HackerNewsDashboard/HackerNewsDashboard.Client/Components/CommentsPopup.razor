@@ -1,0 +1,71 @@
+﻿@using HackerNewsDashboard.Common.DTO
+
+@inject HttpClient HttpClient
+
+@if (!string.IsNullOrEmpty(error))
+{
+    <RadzenAlert AlertStyle="AlertStyle.Danger">@error</RadzenAlert>
+}
+
+
+<RadzenTemplateForm Data="@inputtedComment" Submit="@(async(string? arg) => await HandleSubmit())" class="mb-4">
+    <RadzenLabel Text="Comment:" Component="inputtedComment" />
+    <RadzenTextArea @bind-Value="inputtedComment" Name="inputtedComment" MaxLength="1000" class="w-100" />
+    <RadzenRequiredValidator Component="inputtedComment" DefaultValue="@string.Empty" Text="*Comment is required" />
+
+    <RadzenButton ButtonType="ButtonType.Submit" Text="Make Comment" />
+</RadzenTemplateForm>
+
+<p>@(HNStory?.UserComments?.Count() ?? 0) comments:</p>
+@if (HNStory?.UserComments is not null)
+{
+    foreach (var comment in HNStory.UserComments)
+    {
+        <RadzenCard>
+            <span>@comment.CommentText</span>
+
+            <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
+            <span>By: @comment.Username</span>
+            <span>On: @comment.CommentDateTime.ToLocalTime().ToString("MM/dd/yyyy HH:mm tt")</span>
+        </RadzenCard>
+    }
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public HNStory? HNStory { get; set; } = null!;
+
+    string? inputtedComment;
+
+    string? error;
+
+    async Task HandleSubmit()
+    {
+        try
+        {
+            var newComment = new UserComment() 
+            { 
+                ItemId = HNStory!.Id, 
+                Username = "you",//todo maybe reload data or get proper username
+                CommentText = inputtedComment!, 
+                CommentDateTime = DateTime.UtcNow
+            };
+            var response = await HttpClient.PostAsJsonAsync($"api/postComment", newComment);
+
+            if (response is not null && response.IsSuccessStatusCode)
+            {
+                HNStory!.UserComments = (HNStory.UserComments ?? new List<UserComment>()).Append(newComment);
+                inputtedComment = null;
+                error = null;
+            }
+            else
+            {
+                error = "Error posting comment, please try again later.";
+            }
+        } 
+        catch
+        {
+            error = "Error posting comment, please try again later.";
+        }
+    }
+}

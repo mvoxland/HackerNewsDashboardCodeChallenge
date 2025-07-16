@@ -19,12 +19,18 @@
                         <RadzenLink Text="@story.Url" Path="@story.Url" />
                     </div>
                 </div>
-                <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
-                <div class="row">
+                <div class="row mt-3">
                     <div class="col">
                         <RadzenBadge BadgeStyle="BadgeStyle.Primary" Text=@($"Score: {story.Score}") />
                         <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text=@($"Comments: {story.Kids?.Count()} ({story.Descendants})") />
                         <RadzenBadge BadgeStyle="BadgeStyle.Base" Text=@($"Posted: {(story.Time is not null ? DateTimeOffset.FromUnixTimeSeconds(story.Time!.Value).ToLocalTime().DateTime.ToString("MM/dd/yyyy HH:mm tt") : null)}") />
+                    </div>
+                </div>
+                <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
+                <div class="row">
+                    <div class="col">
+                        <RadzenButton ButtonStyle="ButtonStyle.Secondary" Size="ButtonSize.Small" Variant="Variant.Text" Text=@($"User Comments: {story.UserComments?.Count()}") 
+                                Click="@(async() => await DialogService.OpenAsync<CommentsPopup>("Comments", parameters: new(){{"HNStory", story}}))" />
                     </div>
                 </div>
             </RadzenCard>

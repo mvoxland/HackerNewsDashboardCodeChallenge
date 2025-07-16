@@ -17,5 +17,6 @@ public class HNStory
     public string? Title { get; set; }
     public int? Descendants { get; set; }
 
-    public IEnumerable<HNComment>? Comments { get; set; }
+    public IEnumerable<HNComment>? HNComments { get; set; }
+    public IEnumerable<UserComment>? UserComments { get; set; }
 }

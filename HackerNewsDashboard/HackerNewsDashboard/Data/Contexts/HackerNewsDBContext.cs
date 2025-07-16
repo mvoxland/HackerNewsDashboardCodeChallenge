@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using HackerNewsDashboard.Common.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using HackerNewsDashboard.Data.Models;
 
 namespace HackerNewsDashboard.Data.Contexts;
 
@@ -19,4 +19,5 @@ public class HackerNewsDBContext: IdentityDbContext<User>
     }
 
     public DbSet<TokenInfo> TokenInfo { get; set; }
+    public DbSet<Comment> Comments { get; set; }
 }

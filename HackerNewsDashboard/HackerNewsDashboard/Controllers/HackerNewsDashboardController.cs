@@ -1,11 +1,13 @@
 using HackerNewsDashboard.Common.DTO;
-using HackerNewsDashboard.Common.Models;
 using HackerNewsDashboard.Data;
 using HackerNewsDashboard.Data.Contexts;
+using HackerNewsDashboard.Data.Models;
 using HackerNewsDashboard.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
@@ -64,6 +66,7 @@ namespace HackerNewsDashboard.Controllers
                 {
                     if(queryResult?.Result is not null && queryResult.Result.Deleted != true && queryResult.Result.Dead != true)
                     {
+                        var userComments = await _context.Comments.Where(c => c.ItemId == queryResult.Result.Id).ToListAsync();
                         bestStories.Add(new HNStory()
                         {
                             Id = queryResult.Result.Id,
@@ -74,6 +77,14 @@ namespace HackerNewsDashboard.Controllers
                             Score = queryResult.Result.Score,
                             Title = queryResult.Result.Title,
                             Descendants = queryResult.Result.Descendants,
+
+                            UserComments = userComments?.Select(uc => new UserComment()
+                            {
+                                ItemId = uc.ItemId,
+                                Username = uc.Username,
+                                CommentText = uc.CommentText,
+                                CommentDateTime = DateTime.Parse(uc.CommentDateTime, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal)
+                            })
                         });
                     }
                 }
@@ -86,6 +97,41 @@ namespace HackerNewsDashboard.Controllers
             catch
             {
                 return null;
+            }
+        }
+
+        [Authorize]
+        [HttpPost("postComment")]
+        public async Task<IActionResult> PostComment([FromBody] UserComment comment)
+        {
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(User.FindFirstValue(ClaimTypes.Name)!);
+                Comment commentToAdd = new()
+                {
+                    ItemId = comment.ItemId,
+                    Username = user!.UserName!,
+                    CommentText = comment.CommentText,
+                    CommentDateTime = DateTime.UtcNow.ToString()
+                };
+
+                _context.Add(commentToAdd);
+                var res = await _context.SaveChangesAsync();
+                
+                if(res == 1)
+                {
+                    return Created();
+                }
+                else
+                {
+                    _logger.LogError($"PostComment: {res} rows affected");
+                    return StatusCode(StatusCodes.Status500InternalServerError);
+                }
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 

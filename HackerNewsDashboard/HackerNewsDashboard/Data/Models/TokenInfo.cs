@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HackerNewsDashboard.Common.Models;
+namespace HackerNewsDashboard.Data.Models;
 
 public class TokenInfo
 {
