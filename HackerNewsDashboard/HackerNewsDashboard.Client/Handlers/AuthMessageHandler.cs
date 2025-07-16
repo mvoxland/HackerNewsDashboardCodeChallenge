@@ -27,20 +27,7 @@ public class AuthMessageHandler : DelegatingHandler
             if (expirationString is not null && DateTimeOffset.FromUnixTimeSeconds(long.Parse(expirationString)).UtcDateTime <= DateTime.UtcNow)
             {
                 var response = await _authService.RefreshToken();
-                if (response is not null && response.IsSuccessStatusCode)
-                {
-                    var responseAsString = await response.Content.ReadAsStringAsync();
-                    var responseObject = JsonSerializer.Deserialize<Token>(responseAsString);
-                    if (responseObject is not null && !string.IsNullOrEmpty(responseObject.AccessToken) && !string.IsNullOrEmpty(responseObject.RefreshToken))
-                    {
-                        await _tokenStorageService.SetTokenAsync(responseObject);
-                    }
-                    else
-                    {
-                        await _tokenStorageService.RemoveTokenAsync();
-                    }
-                }
-                else
+                if (response is null || !response.IsSuccessStatusCode)
                 {
                     await _tokenStorageService.RemoveTokenAsync();
                 }
