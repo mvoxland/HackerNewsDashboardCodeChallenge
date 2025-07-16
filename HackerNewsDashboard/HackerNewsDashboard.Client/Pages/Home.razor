@@ -36,6 +36,25 @@
                                 Click="@(async() => await DialogService.OpenAsync<CommentsPopup>("Comments", parameters: new(){{"HNStory", story}}))" />
 
                         <RatingWidget HNStory="@story" />
+
+                        @if(aiPredictions.Any(p => p.ItemId == story.Id))
+                        {
+
+                            if (aiPredictions.Single(p => p.ItemId == story.Id).Prediction != 0)
+                            {
+                                <RadzenBadge BadgeStyle="BadgeStyle.Primary" Text=@($"Predicted Rating: {aiPredictions.Single(p => p.ItemId == story.Id).Prediction}") />
+                            }
+                            else
+                            {
+                                <RadzenBadge BadgeStyle="BadgeStyle.Primary" Text=@("Not Enough Data to Predict Rating") />
+                            }
+                        }
+                        else
+                        {
+                            <RadzenButton ButtonStyle="ButtonStyle.Secondary" Size="ButtonSize.Small" Variant="Variant.Text" Text="Generate AI Rating Prediction"
+                                Click="@(async() => await WillILikeItem(story.Id))" IsBusy="@loadingPrediction" />
+                        }
+                        
                     </div>
                 </div>
             </RadzenCard>
@@ -48,6 +67,9 @@
     int pageSize = 6;
     int count;
     IEnumerable<HNStory>? bestStories;
+
+    bool loadingPrediction;
+    List<AIPredictionResult> aiPredictions = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -65,5 +87,37 @@
         try { response = await httpClient.GetFromJsonAsync<StoriesWithCount?>($"api/bestStoriesPreviewList?skip={skip}&take={take}"); } catch { }
         bestStories = response?.Stories;
         count = response?.Count ?? 0;
+    }
+
+    async Task WillILikeItem(int itemId)
+    {
+        loadingPrediction = true;
+
+        float? response = null;
+        try 
+        {
+            var responseString = await httpClient.GetStringAsync($"api/getWillILikeItem?itemId={itemId}");
+            response = float.Parse(responseString);
+        } catch{}
+
+        if(response is not null)
+        {
+            if (aiPredictions.Any(p => p.ItemId == itemId))
+            {
+                aiPredictions.Where(p => p.ItemId == itemId).Single().Prediction = response!.Value;
+            }
+            else
+            {
+                aiPredictions.Add(new AIPredictionResult(){ ItemId = itemId, Prediction = response!.Value});
+            }
+        }
+
+        loadingPrediction = false;
+    }
+
+    class AIPredictionResult
+    {
+        public int ItemId { get; set; }
+        public float Prediction { get; set; }
     }
 }

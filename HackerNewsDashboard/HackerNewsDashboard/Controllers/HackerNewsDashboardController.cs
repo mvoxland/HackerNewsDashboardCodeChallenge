@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.ML;
+using Microsoft.ML.Trainers;
 using System.Data;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
@@ -190,6 +193,82 @@ namespace HackerNewsDashboard.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
+
+        [Authorize]
+        [HttpGet("getWillILikeItem")]
+        public async Task<float?> GetWillILikeItem(int? itemId)
+        {
+            if (itemId == null || itemId == 0) return null;
+
+            var user = await _userManager.FindByEmailAsync(User.FindFirstValue(ClaimTypes.Name)!);
+
+            try
+            {
+                MLContext mlContext = new MLContext();
+                (IDataView trainingDataView, IDataView testDataView) = LoadMLRatingData(mlContext);
+                ITransformer model = BuildAndTrainModel(mlContext, trainingDataView);
+                EvaluateModel(mlContext, testDataView, model);
+                var predictedRating = UseModelForSinglePrediction(mlContext, model, new ReactionInput() { ItemId = itemId!.Value, Username = user!.UserName! });
+                _logger.LogInformation("Predicted Score: " + predictedRating);
+                //todo - save model for use later, if we had a model worth saving.
+
+                return float.IsNaN(predictedRating.Score) ? 0 : predictedRating.Score;
+            }
+            catch 
+            {
+                return null;
+            }
+        }
+
+        (IDataView training, IDataView test) LoadMLRatingData(MLContext mlContext)
+        {
+            List<ReactionInput> data = _context.Ratings.Select(r => new ReactionInput() { ItemId = r.ItemId, Username = r.Username, Label = r.RatingStars}).ToList();
+            int numTrainingData = (int)(data.Count * 0.8);
+
+            IDataView trainingDataView = mlContext.Data.LoadFromEnumerable(data.Take(numTrainingData));
+            IDataView testDataView = mlContext.Data.LoadFromEnumerable(data.Skip(numTrainingData));
+
+            return (trainingDataView, testDataView);
+        }
+
+        ITransformer BuildAndTrainModel(MLContext mlContext, IDataView trainingDataView)
+        {
+            IEstimator<ITransformer> estimator = mlContext.Transforms.Conversion.MapValueToKey(outputColumnName: "ItemIdEncoded", inputColumnName: "ItemId")
+                .Append(mlContext.Transforms.Conversion.MapValueToKey(outputColumnName: "UsernameEncoded", inputColumnName: "Username"));
+
+            var options = new MatrixFactorizationTrainer.Options
+            {
+                MatrixColumnIndexColumnName = "UsernameEncoded",
+                MatrixRowIndexColumnName = "ItemIdEncoded",
+                LabelColumnName = "Label",
+                NumberOfIterations = 20,
+                ApproximationRank = 100
+            };
+
+            var trainerEstimator = estimator.Append(mlContext.Recommendation().Trainers.MatrixFactorization(options));
+            _logger.LogInformation("=============== Training the model ===============");
+            ITransformer model = trainerEstimator.Fit(trainingDataView);
+
+            return model;
+        }
+
+        void EvaluateModel(MLContext mlContext, IDataView testDataView, ITransformer model)
+        {
+            _logger.LogInformation("=============== Evaluating the model ===============");
+            var prediction = model.Transform(testDataView);
+            var metrics = mlContext.Regression.Evaluate(prediction, labelColumnName: "Label", scoreColumnName: "Score");
+
+            _logger.LogInformation("Root Mean Squared Error : " + metrics.RootMeanSquaredError.ToString());
+            _logger.LogInformation("RSquared: " + metrics.RSquared.ToString());
+        }
+
+        ReactionPrediction UseModelForSinglePrediction(MLContext mlContext, ITransformer model, ReactionInput predictionInput)
+        {
+            Console.WriteLine("=============== Making a prediction ===============");
+            var predictionEngine = mlContext.Model.CreatePredictionEngine<ReactionInput, ReactionPrediction>(model);
+            return predictionEngine.Predict(predictionInput);
+        }
+
 
         #region "proxy"
         [Authorize]

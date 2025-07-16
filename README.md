@@ -24,4 +24,6 @@ I used SQLLite for the database, since it is easiest to put in the GitHub reposi
 
 No tests since the main failure points are the HTTP requests and UI Elements, and what isn't is pretty simple functions.
 
+I also added basic support for machine learning (AI) based reccomendations. I don't have a dataset nearly large enough to get good results off of this, and it uses Matrix Factorization so a large amount of other users would also be needed. For this reason, clicking any item that has not been rated before by some user will make it unable to predict a possible rating. Nonetheless, a very similar process could be used for any other number of reccomendation processes (Ex: a ChatGPT api call, or a model analyzing text similarity between a post and the titles of stories that the current user has liked in the past).
+
 There are tons of things that could be improved on this project if given a proper purpose, but alas it is currently just a coding challenge.
