@@ -1,0 +1,33 @@
+﻿@using HackerNewsDashboard.Common.DTO
+
+@inject HttpClient HttpClient
+
+<RadzenRating Value="@(HNStory?.UserRating?.RatingStars ?? 0)" Stars="5" Change="@HandleChange" />
+
+@code {
+    [Parameter, EditorRequired]
+    public HNStory? HNStory { get; set; } = null!;
+
+    int inputtedRating;
+
+    async Task HandleChange(int arg)
+    {
+        try
+        {
+            var newComment = new UserRating()
+            {
+                ItemId = HNStory!.Id,
+                Username = "dummy",
+                RatingStars = arg,
+                RatingDateTime = DateTime.UtcNow
+            };
+            var response = await HttpClient.PostAsJsonAsync($"api/postRating", newComment);
+
+            if (response is not null && response.IsSuccessStatusCode)
+            {
+                HNStory!.UserRating = newComment;
+            }
+        }
+        catch{}
+    }
+}

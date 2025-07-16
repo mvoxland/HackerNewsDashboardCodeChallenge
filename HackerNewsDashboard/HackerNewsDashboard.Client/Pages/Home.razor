@@ -31,6 +31,8 @@
                     <div class="col">
                         <RadzenButton ButtonStyle="ButtonStyle.Secondary" Size="ButtonSize.Small" Variant="Variant.Text" Text=@($"User Comments: {story.UserComments?.Count()}") 
                                 Click="@(async() => await DialogService.OpenAsync<CommentsPopup>("Comments", parameters: new(){{"HNStory", story}}))" />
+
+                        <RatingWidget HNStory="@story" />
                     </div>
                 </div>
             </RadzenCard>

@@ -19,4 +19,5 @@ public class HNStory
 
     public IEnumerable<HNComment>? HNComments { get; set; }
     public IEnumerable<UserComment>? UserComments { get; set; }
+    public UserRating? UserRating { get; set; }
 }

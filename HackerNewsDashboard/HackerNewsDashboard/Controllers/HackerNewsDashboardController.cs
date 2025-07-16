@@ -67,6 +67,8 @@ namespace HackerNewsDashboard.Controllers
                     if(queryResult?.Result is not null && queryResult.Result.Deleted != true && queryResult.Result.Dead != true)
                     {
                         var userComments = await _context.Comments.Where(c => c.ItemId == queryResult.Result.Id).ToListAsync();
+                        var user = await _userManager.FindByEmailAsync(User.FindFirstValue(ClaimTypes.Name)!);
+                        var userRating = await _context.Ratings.Where(c => c.ItemId == queryResult.Result.Id && c.Username == user!.UserName).FirstOrDefaultAsync();
                         bestStories.Add(new HNStory()
                         {
                             Id = queryResult.Result.Id,
@@ -84,7 +86,15 @@ namespace HackerNewsDashboard.Controllers
                                 Username = uc.Username,
                                 CommentText = uc.CommentText,
                                 CommentDateTime = DateTime.Parse(uc.CommentDateTime, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal)
-                            })
+                            }),
+
+                            UserRating = userRating == null ? null : new UserRating()
+                            {
+                                ItemId = userRating.ItemId,
+                                Username = userRating.Username,
+                                RatingStars = userRating.RatingStars,
+                                RatingDateTime = DateTime.Parse(userRating.RatingDateTime, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal)
+                            }
                         });
                     }
                 }
@@ -129,6 +139,52 @@ namespace HackerNewsDashboard.Controllers
                 }
             }
             catch(Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [Authorize]
+        [HttpPost("postRating")]
+        public async Task<IActionResult> PostRating([FromBody] UserRating rating)
+        {
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(User.FindFirstValue(ClaimTypes.Name)!);
+
+                var existingRating = await _context.Ratings.Where(c => c.ItemId == rating.ItemId && c.Username == user!.UserName).FirstOrDefaultAsync();
+                if (existingRating != null)
+                {
+                    existingRating.RatingStars = rating.RatingStars;
+                    existingRating.RatingDateTime = DateTime.UtcNow.ToString();
+                }
+                else 
+                {
+                    Rating ratingToAdd = new()
+                    {
+                        ItemId = rating.ItemId,
+                        Username = user!.UserName!,
+                        RatingStars = rating.RatingStars,
+                        RatingDateTime = DateTime.UtcNow.ToString()
+                    };
+
+                    _context.Add(ratingToAdd);
+                }
+
+                var res = await _context.SaveChangesAsync();
+
+                if (res == 1)
+                {
+                    return Created();
+                }
+                else
+                {
+                    _logger.LogError($"PostComment: {res} rows affected");
+                    return StatusCode(StatusCodes.Status500InternalServerError);
+                }
+            }
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError);
