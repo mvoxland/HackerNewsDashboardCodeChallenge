@@ -24,6 +24,9 @@
                         <RadzenBadge BadgeStyle="BadgeStyle.Primary" Text=@($"Score: {story.Score}") />
                         <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text=@($"Comments: {story.Kids?.Count()} ({story.Descendants})") />
                         <RadzenBadge BadgeStyle="BadgeStyle.Base" Text=@($"Posted: {(story.Time is not null ? DateTimeOffset.FromUnixTimeSeconds(story.Time!.Value).ToLocalTime().DateTime.ToString("MM/dd/yyyy HH:mm tt") : null)}") />
+                        <RadzenBadge BadgeStyle="BadgeStyle.Info">
+                            <RadzenLink Text="Link" Path="@($"https://news.ycombinator.com/item?id={story.Id}")" Style="color:var(--rz-text-color);" />
+                        </RadzenBadge>
                     </div>
                 </div>
                 <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
