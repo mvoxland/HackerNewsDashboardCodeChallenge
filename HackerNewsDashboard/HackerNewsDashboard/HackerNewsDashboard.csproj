@@ -4,6 +4,9 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>cbef6ca6-7154-4978-831e-bd5a9ad033c0</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,7 +17,14 @@
 	<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.7" />
 	<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.7" />
 	<PackageReference Include="Microsoft.ML.Recommender" Version="0.22.2" />
+	<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
 	<PackageReference Include="Radzen.Blazor" Version="7.1.5" />
   </ItemGroup>
+
+	<ItemGroup>
+		<Content Include="Data/APIDashboardDB.db">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 
 </Project>

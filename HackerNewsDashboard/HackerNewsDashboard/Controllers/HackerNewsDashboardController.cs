@@ -455,7 +455,7 @@ namespace HackerNewsDashboard.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError(ex.Message + ex.InnerException?.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
