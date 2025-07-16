@@ -15,11 +15,11 @@ public class AuthService : IAuthService
     private readonly AuthenticationStateProvider _authenticationStateProvider;
 
     public AuthService(
-        HttpClient httpClient,
+        IHttpClientFactory httpClientFactory,
         ITokenStorageService localStorage,
         AuthenticationStateProvider authenticationStateProvider)
     {
-        _httpClient = httpClient;
+        _httpClient = httpClientFactory.CreateClient("HackerNewsDashboardNoAuthClient");
         _tokenLocalStorage = localStorage;
         _authenticationStateProvider = authenticationStateProvider;
     }
@@ -88,9 +88,17 @@ public class AuthService : IAuthService
         if (response is null || !response.IsSuccessStatusCode)
             return response;
 
-        var responseAsString = await response.Content.ReadAsStringAsync();
+        Token? responseObject = null;
+        try
+        {
+            var responseAsString = await response.Content.ReadAsStringAsync();
 
-        var responseObject = JsonSerializer.Deserialize<Token>(responseAsString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            responseObject = JsonSerializer.Deserialize<Token>(responseAsString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+        catch
+        {
+            return null;
+        }
 
         if (responseObject is null)
             return null;
@@ -99,7 +107,7 @@ public class AuthService : IAuthService
 
         var token = responseObject.AccessToken;
 
-        ((JwtAuthStateProvider)_authenticationStateProvider).NotifyUserAuthentication(token);
+        ((JwtAuthStateProvider)_authenticationStateProvider).NotifyRefreshedUserToken(token);
 
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 

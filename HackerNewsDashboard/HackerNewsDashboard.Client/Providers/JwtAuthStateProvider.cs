@@ -44,7 +44,7 @@ public class JwtAuthStateProvider : AuthenticationStateProvider
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
     }
 
-    private IEnumerable<Claim>? ParseClaimsFromJwt(string jwt)
+    public static IEnumerable<Claim>? ParseClaimsFromJwt(string jwt)
     {
         var payload = jwt.Split('.')[1];
         var jsonBytes = ParseBase64WithoutPadding(payload);
@@ -53,7 +53,7 @@ public class JwtAuthStateProvider : AuthenticationStateProvider
         return keyValuePairs?.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString()!));
     }
 
-    private byte[] ParseBase64WithoutPadding(string base64)
+    public static byte[] ParseBase64WithoutPadding(string base64)
     {
         switch (base64.Length % 4)
         {

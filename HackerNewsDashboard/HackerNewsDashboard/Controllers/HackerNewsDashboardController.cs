@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Json;
 using System.Security.Claims;
@@ -287,7 +288,7 @@ namespace HackerNewsDashboard.Controllers
                 var email = principal.Identity?.Name;
 
                 var tokenInfo = _context.TokenInfo.SingleOrDefault(u => u.Email == email);
-                if (tokenInfo == null || tokenInfo.RefreshToken != tokenModel.RefreshToken || DateTime.Parse(tokenInfo.ExpiredAt) <= DateTime.UtcNow)
+                if (tokenInfo == null || tokenInfo.RefreshToken != tokenModel.RefreshToken || DateTime.Parse(tokenInfo.ExpiredAt, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal) <= DateTime.UtcNow)
                 {
                     return BadRequest("Invalid refresh token. Please login again.");
                 }

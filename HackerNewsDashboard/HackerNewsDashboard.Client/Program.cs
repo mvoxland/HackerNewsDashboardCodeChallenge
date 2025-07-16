@@ -26,6 +26,11 @@ builder.Services.AddScoped(sp =>
     return factory.CreateClient("HackerNewsDashboardAuthorizedClient");
 });
 
+builder.Services.AddHttpClient("HackerNewsDashboardNoAuthClient", client =>
+{
+    client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+});
+
 builder.Services.AddBlazoredLocalStorage();
 
 builder.Services.AddRadzenComponents();
