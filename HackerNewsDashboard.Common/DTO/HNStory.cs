@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HackerNewsDashboard.Common.DTO;
 
-public class Story
+public class HNStory
 {
     public int Id { get; set; }
     public string By { get; set; } = null!;
@@ -17,5 +17,5 @@ public class Story
     public string? Title { get; set; }
     public int? Descendants { get; set; }
 
-    public IEnumerable<Comment>? Comments { get; set; }
+    public IEnumerable<HNComment>? Comments { get; set; }
 }

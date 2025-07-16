@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HackerNewsDashboard.Common.DTO;
 
-public class Comment
+public class HNComment
 {
     public int Id { get; set; }
     public string By { get; set; } = null!;

@@ -2,6 +2,7 @@
 
 @using HackerNewsDashboard.Common.DTO
 @inject HttpClient httpClient
+@inject DialogService DialogService
 
 <PageTitle>Dashboard</PageTitle>
 <h1>Dashboard</h1>
@@ -9,7 +10,7 @@
 <RadzenCard>
     <h5>Best Stories</h5>
 
-    <RadzenDataList WrapItems="true" AllowPaging="false" Data="@bestStories" TItem="Story" EmptyText="There was a problem fetching this data. Please come back and try again.">
+    <RadzenDataList WrapItems="true" AllowPaging="false" Data="@bestStories" TItem="HNStory" EmptyText="There was a problem fetching this data. Please come back and try again.">
         <Template Context="story">
             <RadzenCard Style="width:300px;">
                 <div class="row">
@@ -35,7 +36,7 @@
 @code {
     int pageSize = 6;
     int count;
-    IEnumerable<Story>? bestStories;
+    IEnumerable<HNStory>? bestStories;
 
     protected override async Task OnInitializedAsync()
     {

@@ -59,12 +59,12 @@ namespace HackerNewsDashboard.Controllers
                 }
                 await Task.WhenAll(queries);
 
-                List<Story> bestStories = new();
+                List<HNStory> bestStories = new();
                 foreach (var queryResult in queries)
                 {
                     if(queryResult?.Result is not null && queryResult.Result.Deleted != true && queryResult.Result.Dead != true)
                     {
-                        bestStories.Add(new Story()
+                        bestStories.Add(new HNStory()
                         {
                             Id = queryResult.Result.Id,
                             By = queryResult.Result.By,

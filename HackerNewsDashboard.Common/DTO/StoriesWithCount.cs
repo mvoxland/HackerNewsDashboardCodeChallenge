@@ -8,6 +8,6 @@ namespace HackerNewsDashboard.Common.DTO;
 
 public class StoriesWithCount
 {
-    public IEnumerable<Story> Stories { get; set; } = null!;
+    public IEnumerable<HNStory> Stories { get; set; } = null!;
     public int Count { get; set; }
 }
