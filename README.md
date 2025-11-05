@@ -29,3 +29,6 @@ I also added basic support for machine learning (AI) based reccomendations. I do
 There are tons of things that could be improved on this project if given a proper purpose, but alas it is currently just a coding challenge.
 
 Dockerfile can be found here: https://hub.docker.com/r/mvoxland/hackernewsdashboard
+
+# Hackernews Dashboard - React
+There is also an alternative front-end done in react in the hackernews-dashboard-react folder. It's on you to run this one since I can't be bothered to set up a docker compose to get that running with the main API.
