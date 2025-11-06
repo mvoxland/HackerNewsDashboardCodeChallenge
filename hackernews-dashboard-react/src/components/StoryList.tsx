@@ -34,7 +34,7 @@ const StoryList: React.FC = () => {
         };
 
         loadStories();
-    }, [skip, take]);
+    }, [skip, take, count]);
 
     if (loading) {
         return <div>Loading stories...</div>;

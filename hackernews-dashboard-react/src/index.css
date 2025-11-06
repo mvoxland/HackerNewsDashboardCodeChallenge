@@ -12,7 +12,7 @@
 }
 
 .wrap-text{
-    text-wrap: pre-wrap;
+    white-space: pre-wrap;
 }
 
 .pager{
