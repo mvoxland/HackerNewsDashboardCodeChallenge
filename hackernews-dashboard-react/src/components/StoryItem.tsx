@@ -14,6 +14,7 @@ const StoryItem: React.FC<StoryItemProps> = ( {story} ) => {
             <p>Score: {story.score}</p>
             <p>Comments: {story.kids?.length} ({story.descendants})</p>
             <p>Posted: {story.time ? new Date(story.time * 1000).toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'short'}) : 'N/A'}</p>
+            <a href={`https://news.ycombinator.com/item?id=${story.id}`} target="_blank" rel="noopener noreferrer">Link</a>
 
             <hr />
 
