@@ -10,15 +10,18 @@ export const getRefreshToken = (): string | null => {
 
 export const setToken = (token: string): void => {
     localStorage.setItem('token', token);
+    window.dispatchEvent(new Event('tokenChange'));
 };
 
 export const setRefreshToken = (refreshToken: string): void => {
     localStorage.setItem('refreshToken', refreshToken);
+    window.dispatchEvent(new Event('tokenChange'));
 }
 
 export const removeTokens = (): void => {
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
+    window.dispatchEvent(new Event('tokenChange'));
 };
 
 export const decodeToken = (token: string): JwtPayload => {

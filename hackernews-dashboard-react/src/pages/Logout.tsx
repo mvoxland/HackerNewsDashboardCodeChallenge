@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { removeTokens } from '../utils/jwt';
 
-const Register = () => {
+const Logout = () => {
     const [error, setError] = useState<string>('');
     const navigate = useNavigate();
 
@@ -24,10 +24,10 @@ const Register = () => {
             {error && <p style={{ color: 'red' }}>{error}</p>}
             <form onSubmit={handleSubmit}>
                 Are you sure you wish to logout?
-                <button type="submit">Register</button>
+                <button type="submit">Logout</button>
             </form>
         </div>
     );
 };
 
-export default Register;
+export default Logout;

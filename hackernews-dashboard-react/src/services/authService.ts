@@ -9,8 +9,6 @@ export const login = async (email: string, password: string) => {
     if (response.data.accessToken) {
         setToken(response.data.accessToken);
         setRefreshToken(response.data.refreshToken);
-
-        // todo - notify auth state change
     }
     return;
 };
