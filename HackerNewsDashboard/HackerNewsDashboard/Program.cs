@@ -11,6 +11,17 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowDebugLocalhost", policy =>
+    {
+        policy.SetIsOriginAllowed(origin => true)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials(); // if using cookies or auth headers
+    });
+});
+
 builder.Services.AddControllers();
 
 // Add services to the container.
@@ -74,7 +85,7 @@ else
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors("AllowDebugLocalhost");
 app.UseAuthentication();
 app.UseAuthorization();
 

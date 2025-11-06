@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Token } from '../types';
 import { setRefreshToken, setToken } from '../utils/jwt';
 
-const API_URL = 'http://localhost/api';
+const API_URL = 'https://localhost/api';
 
 export const login = async (email: string, password: string) => {
     const response = await axios.post<Token>(`${API_URL}/login`, { email: email, password: password });
