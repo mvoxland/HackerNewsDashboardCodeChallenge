@@ -1,3 +1,29 @@
 .story-item{
-    color:green;
+    border:1px solid black;
+    width: 15rem;
+    margin-top: 0.5rem;
+}
+
+.story-list{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-left: 0px;
+}
+
+.wrap-text{
+    text-wrap: pre-wrap;
+}
+
+.pager{
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.pager-size-select{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
